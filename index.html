@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Email Copymaker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  
+  <!-- Стили -->
+  <link rel="stylesheet" href="src/styles/main.css">
+  <link rel="stylesheet" href="src/styles/forms.css">
+  <link rel="stylesheet" href="src/styles/components.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-envelope"></i> Email Copymaker</h1>
+      <p>Профессиональный (почти) инструмент для самых ленивых</p>
+    </div>
+    
+    <div class="main-content">
+      <div class="form-group">
+        <div class="form-row">
+          <label for="copyNameInput"><i class="fas fa-tag"></i> Copy Name:</label>
+          <input type="text" id="copyNameInput" placeholder="email_copy" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="form-row">
+          <label><i class="fas fa-upload"></i> Load HTML Template:</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="templateFile" accept=".html">
+            <span class="file-input-label">
+              <i class="fas fa-file-upload"></i> Выберите файл
+            </span>
+          </div>
+        </div>
+        <div id="loadedTemplate">
+          <i class="fas fa-info-circle"></i> Loaded: <span id="loadedFilename">none</span>
+        </div>
+      </div>
+      
+      <div id="errorMsg" class="error hidden"></div>
+      
+      <div class="form-group">
+        <label class="section-title">
+          <i class="fas fa-code"></i> Email Body HTML:
+        </label>
+        <div class="button-group" style="margin: 10px 0;">
+          <button id="loadFromGoogleDrive" class="btn btn-secondary">
+            <i class="fab fa-google-drive"></i> Load from Google Drive
+          </button>
+        </div>
+        <div style="margin: 5px 0 15px 0;">
+          <small id="googleDriveStatus" style="color: #666; font-size: 0.85em;"></small>
+        </div>
+        <div class="history-controls">
+          <button id="historyPrev" class="btn btn-secondary" style="padding: 8px 12px;" title="Предыдущая копия">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span id="historyStatus" style="color: #666; font-size: 0.9em;">История: нет данных</span>
+          <button id="historyNext" class="btn btn-secondary" style="padding: 8px 12px;" title="Следующая копия">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <button id="cheatsheetBtn" class="btn btn-secondary" style="padding: 8px 12px; margin-left: auto;" title="Image Code Cheatsheet">
+            <i class="fas fa-question-circle"></i>
+          </button>
+        </div>
+        <div id="bodyWrapper" class="editor-wrapper">
+          <textarea id="bodyInput"></textarea>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="section-title">
+          <i class="fas fa-file-alt"></i> Subject Line (SL):
+        </label>
+        <div id="slLoadedIndicator" class="sl-loaded-indicator" style="display: none;">
+          <i class="fas fa-check-circle" style="color: #38a169;"></i>
+          <span id="slLoadedText">SL Loaded: </span>
+        </div>
+        <div class="button-group" style="margin: 10px 0;">
+          <button id="loadSLFromGoogleDrive" class="btn btn-secondary">
+            <i class="fab fa-google-drive"></i> Load SL
+          </button>
+        </div>
+        
+        <div id="slWrapper" class="editor-wrapper" style="min-height: 100px; max-height: 200px;">
+                      <textarea id="slInput" placeholder="Subject Line автоматически ищется при загрузке HTML файла. Используйте 'Load SL' для ручного выбора другого файла..."></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label for="espSelect"><i class="fas fa-server"></i> ESP:</label>
+        <select id="espSelect">
+          <option value="default">Default</option>
+          <option value="exacttarget">ExactTarget</option>
+        </select>
+        
+        <label for="copyType"><i class="fas fa-list"></i> Copy Type:</label>
+        <select id="copyType">
+          <option value="regular">Regular</option>
+          <option value="priority">Priority</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <div class="form-row">
+          <label for="linkInput"><i class="fas fa-link"></i> Link (replaces 'urlhere'):</label>
+          <input type="text" id="linkInput" placeholder="https://example.com">
+        </div>
+        <div class="form-row">
+          <label for="linkColorInput"><i class="fas fa-palette"></i> Link Color:</label>
+          <input type="color" id="linkColorInput" value="#1a5fae" title="Цвет ссылок в письме">
+          <input type="text" id="linkColorText" placeholder="#1a5fae" style="width: 100px;">
+        </div>
+      </div>
+      
+      <div id="priorityContainer" class="hidden">
+        <label class="section-title">
+          <i class="fas fa-star"></i> Priority Draft:
+        </label>
+        <div class="editor-wrapper">
+          <textarea id="priorityText"></textarea>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button id="saveBtn" class="btn btn-success">
+          <i class="fas fa-save"></i> Save Copy
+        </button>
+        <button id="copyButton" class="btn btn-info">
+          <i class="fas fa-copy"></i> Copy to Clipboard
+        </button>
+        <button id="copyPromoButton" class="btn btn-warning" title="Копировать только измененный body">
+          <i class="fas fa-cut"></i> Copy Promo
+        </button>
+      </div>
+      
+      
+      
+      <div class="image-search-section">
+        <div class="section-title">
+          <i class="fas fa-images"></i> Image Replace:
+        </div>
+        <button id="searchImagesBtn" class="btn btn-primary">
+          <i class="fas fa-search"></i> Search Images
+        </button>
+        <div id="searchImageNotifications"></div>
+        <div id="imageEditor">
+          <div class="no-images-message">
+            <i class="fas fa-info-circle"></i>
+            <p>Нажмите кнопку "Search Images" для поиска изображений в HTML коде</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section-title">
+        <i class="fas fa-file-code"></i> Output HTML:
+      </div>
+      <div class="editor-wrapper">
+        <textarea id="output"></textarea>
+      </div>
+      
+      <div class="section-title">
+        <i class="fas fa-eye"></i> Live Preview:
+      </div>
+      
+      <div class="form-row">
+        <label for="previewDevice"><i class="fas fa-mobile-alt"></i> Device Preview:</label>
+        <select id="previewDevice">
+          <option value="desktop">Desktop</option>
+          <option value="mobile">Mobile</option>
+        </select>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="darkModeToggle"/>
+          <label for="darkModeToggle"><i class="fas fa-moon"></i> Dark Mode</label>
+        </div>
+      </div>
+      
+      <div id="previewWrapper">
+        <iframe id="livePreview"></iframe>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Контейнер для уведомлений поверх контента -->
+  <div id="notificationOverlay" class="notification-overlay"></div>
+  
+  <!-- Cheatsheet Popup -->
+  <div id="cheatsheetPopup" class="cheatsheet-popup" style="display: none;">
+    <div class="cheatsheet-content">
+      <div class="cheatsheet-header">
+        <h3>Image Code</h3>
+        <button id="cheatsheetClose" class="cheatsheet-close">&times;</button>
+      </div>
+      <div class="cheatsheet-body">
+        <textarea readonly id="cheatsheetCode" style="width: 100%; height: 200px; font-family: monospace; font-size: 14px; border: 1px solid #dee2e6; padding: 15px; resize: vertical;">&lt;table role="presentation" width="100%" cellspacing="0" cellpadding="0"&gt;
+    &lt;tr&gt;
+      &lt;td align="center" style="padding-top: 15px; padding-bottom: 15px;"&gt;
+        &lt;a href="urlhere" target="_blank" style="text-decoration: none; color:#0068a5"&gt;
+          &lt;img src="img_url" alt="Video" width="600" style="max-width: 100%; height: auto; display: block; border: 0;"&gt;
+        &lt;/a&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;</textarea>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Внешние библиотеки -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+  
+  <!-- Конфигурация -->
+  <script src="config/config.js"></script>
+  
+  <!-- Утилиты и сервисы -->
+  <script src="src/utils/helpers.js"></script>
+  <script src="src/services/historyService.js"></script>
+  <script src="src/services/googleDriveService.js"></script>
+  <script src="src/services/slService.js"></script>
+  
+  <!-- Компоненты -->
+  <script src="src/components/imageManager.js"></script>
+  
+  <!-- Главное приложение -->
+  <script src="src/app.js"></script>
+</body>
+</html>
