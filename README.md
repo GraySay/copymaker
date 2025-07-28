@@ -1,6 +1,6 @@
 # Email Copymaker | By Hex
 
-### 🌐 **Check here:** https://graysay.github.io/copymaker/
+### 🌐 **Check here:** https://graysay.github.io/email-copymaker/
 
 Email Copymaker is a professional tool for creating, managing, and organizing email copy. It integrates with Google Drive, allows quick headline search, body replacement, copy rewriting, and easy image updates.
 
