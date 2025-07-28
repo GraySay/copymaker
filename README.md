@@ -14,7 +14,6 @@ Email Copymaker is a professional tool for creating, managing, and organizing em
 ```
 ├── index.html                 # Main HTML file
 ├── config/
-│   ├── config.js             # Working configuration
 │   └── config.example.js     # Example configuration
 ├── src/
 │   ├── app.js               # Main application
