@@ -14,7 +14,6 @@ Email Copymaker — профессиональный инструмент для
 ```
 ├── index.html                 # Главный HTML файл
 ├── config/
-│   ├── config.js             # Рабочая конфигурация
 │   └── config.example.js     # Пример конфигурации
 ├── src/
 │   ├── app.js               # Главное приложение
