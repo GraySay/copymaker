@@ -2,7 +2,7 @@
 
 ### 🌐 **Check here:** https://graysay.github.io/email-copymaker/
 
-Email Copymaker is a professional tool for creating, managing, and organizing email copy. It integrates with Google Drive, allows quick headline search, body replacement, copy rewriting, and easy image updates.
+Email Copymaker is a professional tool for creating, managing, and organizing email copy. It integrates with Google Drive, allows quick subject line search, body replacement, copy rewriting, and easy image updates.
 
 ###  **Why You Need It**
 
